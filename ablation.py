@@ -199,7 +199,7 @@ class Muon(Optimizer):
 # train
 
 def train_optimizer(optimizer_class, opt_name, model, train_loader, device, epochs=5, **opt_kwargs):
-    print(f"\n 开始训练: {opt_name}")
+    print(f"\n start training: {opt_name}")
     
     optimizer = optimizer_class(model.parameters(), **opt_kwargs)
     criterion = nn.CrossEntropyLoss()
@@ -218,7 +218,6 @@ def train_optimizer(optimizer_class, opt_name, model, train_loader, device, epoc
             optimizer.step()
             total_loss += loss.item()
             
-        # 记录每个 Epoch 的平均 Loss
         avg_loss = total_loss / len(train_loader)
         epoch_losses.append(avg_loss)
         print(f"  Epoch [{epoch+1}/{epochs}] - Average Loss: {avg_loss:.4f}")
@@ -231,10 +230,10 @@ if __name__ == "__main__":
     base_model = SimpleMLP().to(device)
     
     experiments = {
-        "1. Standard SGD": (SGD, {"lr": 0.05}),
-        "2. Orthogonal SGD (NS)": (NewtonSchulzSGD, {"lr": 0.02}),  
-        "3. Momentum SGD": (Momentum, {"lr": 0.05, "momentum": 0.9}),
-        "4. Muon (Momentum + NS)": (Muon, {"lr": 0.005, "momentum": 0.9}) 
+        "1. SGD": (SGD, {"lr": 0.05}),
+        "2. Orthogonal SGD": (NewtonSchulzSGD, {"lr": 0.02}),  
+        "3. Momentum ": (Momentum, {"lr": 0.05, "momentum": 0.9}),
+        "4. Muon": (Muon, {"lr": 0.005, "momentum": 0.9}) 
     }
     
     results = {}
@@ -252,12 +251,12 @@ if __name__ == "__main__":
         plt.plot(range(1, epochs_to_run + 1), losses, label=name, 
                  linestyle=styles[i], color=colors[i], linewidth=2.5, marker='o')
 
-    plt.title('Optimizer Ablation Study on MNIST (SimpleMLP)', fontsize=14, fontweight='bold')
+    plt.title('Ablation Study on MNIST (SimpleMLP)', fontsize=14, fontweight='bold')
     plt.xlabel('Epochs', fontsize=12)
     plt.ylabel('Training Loss (Cross Entropy)', fontsize=12)
     plt.grid(True, linestyle='--', alpha=0.7)
     plt.legend(fontsize=11)
     
-    print("\n训练完成，生成对比图表...")
+    print("\nfinish, generate image...")
     plt.tight_layout()
     plt.show()
