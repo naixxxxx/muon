@@ -232,9 +232,9 @@ if __name__ == "__main__":
     
     experiments = {
         "1. Standard SGD": (SGD, {"lr": 0.05}),
-        "2. Orthogonal SGD (NS)": (NewtonSchulzSGD, {"lr": 0.05}),
+        "2. Orthogonal SGD (NS)": (NewtonSchulzSGD, {"lr": 0.02}),  
         "3. Momentum SGD": (Momentum, {"lr": 0.05, "momentum": 0.9}),
-        "4. Muon (Momentum + NS)": (Muon, {"lr": 0.05, "momentum": 0.9})
+        "4. Muon (Momentum + NS)": (Muon, {"lr": 0.005, "momentum": 0.9}) 
     }
     
     results = {}
