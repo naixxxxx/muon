@@ -3,10 +3,9 @@ import torch.nn as nn
 import torchvision
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
+from torch.optim import Optimizer
 
 device = torch.device("mps" if torch.backends.mps.is_available() else "cuda" if torch.cuda.is_available() else "cpu")
-print(f"当前使用的计算设备: {device}")
-
 
 transform = transforms.Compose([
     transforms.ToTensor(),
@@ -22,7 +21,7 @@ test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
 class SimpleMLP(nn.Module):
     def __init__(self):
-        super(SimpleMLP, self).__init__()
+        super().__init__()
         self.flatten = nn.Flatten()
         self.fc1 = nn.Linear(28 * 28, 256)
         self.relu1 = nn.ReLU()
@@ -39,8 +38,30 @@ class SimpleMLP(nn.Module):
         x = self.fc3(x)
         return x
 
-if __name__ == "__main__":
-    dummy_model = SimpleMLP().to(device)
-    dummy_input = torch.randn(2, 1, 28, 28).to(device)
-    output = dummy_model(dummy_input)
-    print(f"模型输出形状 (Batch Size, Classes): {output.shape}")
+
+# SGD
+
+class CustomSGD(Optimizer):
+    def __init__(self, params, lr=0.01):
+        if lr < 0.0:
+            raise ValueError(f"Invalid learning rate: {lr}")
+        defaults = dict(lr=lr)
+        super().__init__(params, defaults)
+
+    @torch.no_grad()
+    def step(self, closure=None):
+        loss = None
+        if closure is not None:
+            with torch.enable_grad():
+                loss = closure()
+
+        for group in self.param_groups:
+            lr = group['lr']
+
+            for p in group['params']:
+                if p.grad is None:
+                    continue
+                d_p = p.grad
+                p.sub_(d_p, alpha=lr)
+
+        return loss
